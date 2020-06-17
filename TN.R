@@ -115,3 +115,48 @@ valor_ell <- district_ell %>%
   select(school, total, perc_ell, mean_ell, comp_ell)
 
 write.csv(valor_ell, file = file.path("output_data/tn_stan_ell.csv"), row.names = FALSE)
+
+#------- FRPL and SWD ------
+tn_subgroups <- read_excel("raw_data/TN_schoolprofile201819 .xlsx")
+View(tn_subgroups)
+names(tn_subgroups) <- tolower(names(tn_subgroups))
+names(tn_subgroups)[c(15,17,19)] <- c("econ_dis_pct","lep_pct","swd_pct")
+tn_subgroups <- tn_subgroups %>% 
+  select(district_name, school_name, total, econ_dis_pct,lep_pct,swd_pct,african_american_pct,asian_pct,hawaiian_pacisld_pct,
+         hispanic_pct,native_american_pct,white_pct)
+str(tn_subgroups)
+tn_subgroups[c(4:12)] <- tn_subgroups[c(4:12)]*.01 # change percents to a decimal figure
+tn_lep <- tn_subgroups %>% 
+  filter(district_name == "Metro Nashville Public Schools") %>%  # filter to only comparison districts
+  select(school_name, total, lep_pct) %>% 
+  filter(school_name!= "Valor Voyager Academy" &
+           school_name!= "Valor Flagship Academy")
+a<- tn_lep %>% 
+  summarize(mean_lep = mean(lep_pct),
+            sd_lep = sd(lep_pct))
+
+valor_lep <- tn_subgroups %>% 
+  filter(school_name == "Valor Flagship Academy"|
+           school_name == "Valor Voyager Academy") %>% 
+  mutate(mean_lep = a$mean_lep,
+         sd_lep = a$sd_lep,
+         comp_lep = (lep_pct - mean_lep)/sd_lep) %>% 
+  select(school_name, total, lep_pct, mean_lep, comp_lep)
+
+tn_swd <- tn_subgroups %>% 
+  filter(district_name == "Metro Nashville Public Schools") %>%  # filter to only comparison districts
+  select(school_name, total, swd_pct) %>% 
+  filter(school_name!= "Valor Voyager Academy" &
+           school_name!= "Valor Flagship Academy")
+a<- tn_swd %>% 
+  summarize(mean_swd = mean(swd_pct),
+            sd_swd = sd(swd_pct))
+valor_swd <- tn_subgroups %>% 
+  filter(school_name == "Valor Flagship Academy"|
+           school_name == "Valor Voyager Academy") %>% 
+  mutate(mean_swd = a$mean_swd,
+         sd_swd = a$sd_swd,
+         comp_swd = (swd_pct - mean_swd)/sd_swd) %>% 
+  select(school_name, total, swd_pct, mean_swd, comp_swd)
+
+write.csv(valor_swd, file = file.path("output_data/tn_stan_swd.csv"))
