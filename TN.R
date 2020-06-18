@@ -118,6 +118,7 @@ write.csv(valor_ell, file = file.path("output_data/tn_stan_ell.csv"), row.names 
 
 #------- FRPL and SWD ------
 tn_subgroups <- read_excel("raw_data/TN_schoolprofile201819 .xlsx")
+# loaded data from https://www.tn.gov/content/dam/tn/education/data/profile/schoolprofile201819%20(1).xlsx
 View(tn_subgroups)
 names(tn_subgroups) <- tolower(names(tn_subgroups))
 names(tn_subgroups)[c(15,17,19)] <- c("econ_dis_pct","lep_pct","swd_pct")
@@ -159,4 +160,73 @@ valor_swd <- tn_subgroups %>%
          comp_swd = (swd_pct - mean_swd)/sd_swd) %>% 
   select(school_name, total, swd_pct, mean_swd, comp_swd)
 
-write.csv(valor_swd, file = file.path("output_data/tn_stan_swd.csv"))
+write.csv(valor_swd, file = file.path("output_data/tn_stan_swd.csv"), row.names = FALSE)
+
+tn_econ_dis <- tn_subgroups %>% 
+  filter(district_name == "Metro Nashville Public Schools") %>%  # filter to only comparison districts
+  select(school_name, total, econ_dis_pct) %>% 
+  filter(school_name!= "Valor Voyager Academy" &
+           school_name!= "Valor Flagship Academy")
+a<- tn_econ_dis %>% 
+  summarize(mean_econ_dis = mean(econ_dis_pct),
+            sd_econ_dis = sd(econ_dis_pct))
+valor_econ_dis <- tn_subgroups %>% 
+  filter(school_name == "Valor Flagship Academy"|
+           school_name == "Valor Voyager Academy") %>% 
+  mutate(mean_econ_dis = a$mean_econ_dis,
+         sd_econ_dis = a$sd_econ_dis,
+         comp_econ_dis = (econ_dis_pct - mean_econ_dis)/sd_econ_dis) %>% 
+  select(school_name, total, econ_dis_pct, mean_econ_dis, comp_econ_dis)
+
+write.csv(valor_econ_dis, file = file.path("output_data/tn_stan_frpl.csv"), row.names = FALSE)
+##----------- math ELA -----
+tn_acad <- read.csv("raw_data/TN_school_assessment_file_suppressed.csv")
+# data downloaded from https://www.tn.gov/content/dam/tn/education/accountability/2019/school_assessment_file_suppressed.csv
+summary(tn_acad)
+tn_math <- tn_acad %>% 
+  mutate(pct_on_mastered = as.numeric(as.character(pct_on_mastered)) * .01,
+         n_on_track = as.numeric(as.character(n_on_track)),
+         n_mastered = as.numeric(as.character(n_mastered)),
+         n_on_mastered = n_on_track + n_mastered) %>% 
+  filter(grade == "All Grades",
+         subgroup == "All Students",
+         test == "TNReady",
+         subject == "Math",
+         system_name == "Davidson County") %>% # eliminates duplicate Eakin Elementary
+  select(system_name, school_name, subject,valid_tests, pct_on_mastered) %>% 
+  na.omit(pct_on_mastered)
+tn_math <- tn_math[tn_math$school_name %in% tn_enrl$school, ] # matches list of schools in Metro Nashville PS
+summary_math <- tn_math %>% 
+  summarize(mean_math = mean(pct_on_mastered),
+          sd_math = sd(pct_on_mastered))
+valor_math <- tn_math %>% 
+  filter(school_name == "Valor Voyager Academy"|
+           school_name == "Valor Flagship Academy") %>% 
+  mutate(mean_math = summary_math$mean_math,
+         comp_math = (pct_on_mastered - mean_math)/summary_math$sd_math)
+
+write.csv(valor_math, file = file.path("output_data/tn_stan_math.csv"),row.names = FALSE)
+
+tn_ela <- tn_acad %>% 
+  mutate(pct_on_mastered = as.numeric(as.character(pct_on_mastered)) * .01,
+         n_on_track = as.numeric(as.character(n_on_track)),
+         n_mastered = as.numeric(as.character(n_mastered)),
+         n_on_mastered = n_on_track + n_mastered) %>% 
+  filter(grade == "All Grades",
+         subgroup == "All Students",
+         test == "TNReady",
+         subject == "ELA",
+         system_name == "Davidson County") %>% # eliminates duplicate Eakin Elementary
+  select(system_name, school_name, subject,valid_tests, pct_on_mastered) %>% 
+  na.omit(pct_on_mastered)
+tn_ela <- tn_ela[tn_ela$school_name %in% tn_enrl$school, ] # matches list of schools in Metro Nashville PS
+summary_ela <- tn_ela %>% 
+  summarize(mean_ela = mean(pct_on_mastered),
+            sd_ela = sd(pct_on_mastered))
+valor_ela <- tn_ela %>% 
+  filter(school_name == "Valor Voyager Academy"|
+           school_name == "Valor Flagship Academy") %>% 
+  mutate(mean_ela = summary_ela$mean_ela,
+         comp_ela = (pct_on_mastered - mean_ela)/summary_ela$sd_ela)
+
+write.csv(valor_ela, file = file.path("output_data/tn_stan_ela.csv"),row.names = FALSE)
