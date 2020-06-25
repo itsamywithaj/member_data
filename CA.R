@@ -65,6 +65,9 @@ ca_memb <- ca_enrl %>%
            school == "The City" |
            school == "City Language Immersion Charter"|
            str_detect(school, "Lashon Academy") == TRUE|
+           school == "Growth Public"|
+           school == "Gateway High"|
+           school == "Gateway Middle"|
            str_detect(school, "High Tech") == TRUE|
            school == "Larchmont Charter"|
            school == "Odyssey Charter"|
@@ -75,7 +78,7 @@ ca_memb <- ca_enrl %>%
            school == "Yu Ming Charter") %>% 
   arrange(district, school) %>% 
   select(school, district, total, perc_amind, perc_asian, perc_black, perc_hispanic, perc_white, perc_multiple, perc_unreported)
-ca_memb$district[28:36]<- c("Chula Vista Elementary", # comparison districts for HTH
+ca_memb$district[31:39]<- c("Chula Vista Elementary", # comparison districts for HTH
                             "San Diego Unified",
                             "San Marcos Unified",
                             "Sweetwater Union High",
@@ -102,7 +105,7 @@ ca_memb <- ca_memb %>%
          perc_unreported, mean_unreported, comp_unrep) %>% 
   arrange(school)
 # ------ file export for racial demographic enrollment ------
-write.csv(ca_memb, file = file.path('ca_stan_enroll.csv'), row.names = FALSE)
+write.csv(ca_memb, file = file.path('output_data/ca_stan_enroll.csv'), row.names = FALSE)
 # ------ FRPL ------------
 ca_frpm <- read_excel("raw_data/CA_frpm1920.xlsx", sheet = "FRPM School-Level Data ") # Read FRPM data
 # load Excel sheet from https://www.cde.ca.gov/ds/sd/sd/filessp.asp
@@ -127,6 +130,9 @@ ca_memb_frpm <- ca_frpm %>%
            school == "The City" |
            school == "City Language Immersion Charter"|
            str_detect(school, "Lashon Academy") == TRUE|
+           school == "Gateway High"|
+           school == "Gateway Middle"|
+           school == "Growth Public"|
            str_detect(school, "High Tech") == TRUE|
            school == "Larchmont Charter"|
            school == "Odyssey Charter"|
@@ -136,7 +142,7 @@ ca_memb_frpm <- ca_frpm %>%
            school == "Valley Charter Middle"|
            school == "Yu Ming Charter") %>% 
   arrange(district, school)
-ca_memb_frpm$district[28:36]<- c("Chula Vista Elementary", # comparison districts for HTH
+ca_memb_frpm$district[31:39]<- c("Chula Vista Elementary", # comparison districts for HTH
                             "San Diego Unified",
                             "San Marcos Unified",
                             "Sweetwater Union High",
@@ -151,7 +157,7 @@ ca_memb_frpm <- ca_memb_frpm %>%
   arrange(school) %>% 
   select(school, district, perc_elig, dist_mean, comp_frpm)
 
-write.csv(ca_memb_frpm, file = file.path('ca_stan_frpm.csv'), row.names = FALSE)
+write.csv(ca_memb_frpm, file = file.path('output_data/ca_stan_frpm.csv'), row.names = FALSE)
 # ------ English Learners -------
 ca_ell <- read.csv("raw_data/fileselsch.csv")
 # raw data downloaded from https://www.cde.ca.gov/ds/sd/sd/fileselsch.asp
@@ -180,6 +186,9 @@ ca_memb_ell <- ca_ell %>% #filter to just members
             school == "The City" |
             school == "City Language Immersion Charter"|
             str_detect(school, "Lashon Academy") == TRUE|
+           school == "Gateway High"|
+           school == "Gateway Middle"|
+           school == "Growth Public"|
             str_detect(school, "High Tech") == TRUE|
             school == "Larchmont Charter"|
             school == "Odyssey Charter"|
@@ -190,7 +199,7 @@ ca_memb_ell <- ca_ell %>% #filter to just members
             school == "Yu Ming Charter") %>% 
   arrange(district, school)
 
-ca_memb_ell$district[28:36]<- c("Chula Vista Elementary", # comparison districts for HTH
+ca_memb_ell$district[31:39]<- c("Chula Vista Elementary", # comparison districts for HTH
                                 "San Diego Unified",
                                 "San Marcos Unified",
                                 "Sweetwater Union High",
@@ -204,7 +213,7 @@ ca_memb_ell <- ca_memb_ell %>%
   mutate(comp_el = (perc_el - dist_mean)/dist_sd) %>% 
   select(school, district, total_el,total, perc_el, dist_mean, comp_el)
 
-write.csv(ca_memb_ell, file = file.path('ca_stan_ell.csv'), row.names = FALSE)
+write.csv(ca_memb_ell, file = file.path('output_data/ca_stan_ell.csv'), row.names = FALSE)
 
 # ------ CAASPP math and ELA --------
 # downloaded research files from https://caaspp-elpac.cde.ca.gov/caaspp/ResearchFileList?ps=true&lstTestYear=2019&lstTestType=B&lstCounty=00&lstDistrict=00000&lstSchool=0000000
@@ -232,11 +241,14 @@ summary(caaspp_schools$type_id)
 
 caaspp_memb_codes <- caaspp_schools %>% 
   select(type_id, dist_code, school_code, dist_name,school_name) %>% 
-  filter(type_id == "dist" | type_id == "school"| # save the codes for just members
+  filter(type_id == "dist" | type_id == "school"|  # save the codes for just members
            type_id == "charter_direct" | type_id == "charter_local",
          str_detect(school_name, "Citizens of the World Charter School") == TRUE|
            school_name == "The City" |
            school_name == "City Language Immersion Charter"|
+           school_name == "Growth Public"|
+           school_name == "Gateway High"|
+           school_name == "Gateway Middle"|
            str_detect(school_name, "Lashon Academy") == TRUE|
            str_detect(school_name, "High Tech") == TRUE|
            school_name == "Larchmont Charter"|
@@ -272,22 +284,7 @@ caaspp_members <- caaspp_members %>%
   select(school, school_code,dist_name,dist_code, grade, test_id, n_tested, perc_metabove) %>% 
   unique() %>% 
   filter(grade == "13") # grade 13 = all the grades summed together
-  
 
-caaspp <- caaspp[caaspp$dist_code %in% dist_codes$dist_code ,] # subset relevant district codes
-caaspp <- caaspp %>% 
-  select(dist_code, school_code, grade, n_tested, test_id, perc_metabove)
-summary(caaspp)
-caaspp$n_tested <- as.numeric(caaspp$n_tested)
-caaspp <- caaspp %>% 
-  filter(school_code!= "0000000",
-         grade == 13) %>% #filter out the rows reporting on district or state
-  arrange(dist_code, school_code, test_id, n_tested) %>% 
-  select(dist_code, school_code, grade, test_id, n_tested, perc_metabove) %>%  
-  na.omit(caaspp$n_metabove) # remove rows with missing values
-c <- dist_codes %>% 
-  select(dist_name, dist_code)
-caaspp <- merge(caaspp,c, by="dist_code") # add district names to the correct code
 
 caaspp_stan_math <- caaspp %>% 
   filter(test_id == "math") %>% 
@@ -326,5 +323,5 @@ ca_stan_ela <- ca_stan_ela %>%
   select(dist_name, school, n_tested,perc_metabove, mean_perc_me, comp_me) %>% 
   arrange(school)
 
-write.csv(ca_stan_ela, file = file.path("ca_stan_ela.csv"), row.names = FALSE)
-write.csv(ca_stan_math, file = file.path("ca_stan_math.csv"), row.names = FALSE)
+write.csv(ca_stan_ela, file = file.path("output_data/ca_stan_ela.csv"), row.names = FALSE)
+write.csv(ca_stan_math, file = file.path("output_data/ca_stan_math.csv"), row.names = FALSE)
