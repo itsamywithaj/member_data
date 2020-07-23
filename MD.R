@@ -4,6 +4,8 @@ install.packages("tidyverse") # install tidyverse
 library(tidyverse)
 install.packages("ggplot2")
 library(ggplot2)
+install.packages("data.table")
+library(data.table)
 
 # ----- Enrollment ------
 # import data from https://reportcard.msde.maryland.gov/DataDownloads/FileDownload/376
@@ -250,3 +252,59 @@ write.csv(md_stan, file = file.path("output_data/md_stan_enrl.csv"),row.names = 
 
 #---- Math and ELA ----
 # imported data from https://reportcard.msde.maryland.gov/DataDownloads/FileDownload/375
+md_test <- read.csv("raw_data/md_MCAP_ELA_MATH_2019.csv")
+str(md_test)
+md_test<-md_test %>% 
+  select(LSS.Name,School.Name,Assessment,Tested.Count,Proficient.Count,Proficient.Pct) %>% 
+  filter(LSS.Name == "Baltimore City")
+names(md_test) <- c("district","school","test","n_tested","n_prof","p_prof")
+levels(md_test$test) <- gsub("English/Language Arts","ela",levels(md_test$test))
+levels(md_test$test) <- gsub("Mathematics","math",levels(md_test$test))
+levels(md_test$test)[c(1:2,11)] <- "math"
+levels(md_test$test) <- gsub("Grade", "--",levels(md_test$test))
+
+md_test <- md_test %>% 
+  separate(test,c("subject","grade"),sep=" -- ",extra = "merge") %>% 
+  mutate(n_tested = as.numeric(as.character(n_tested)),
+         n_prof = as.numeric(as.character(n_prof))) %>% 
+  na.omit() %>% 
+  select(district, school, subject, n_tested, n_prof)
+DT <- data.table(md_test)
+md_test <- DT[, lapply(.SD, sum), by=list(school, district, subject)]
+md_test <- md_test %>% 
+  mutate(p_prof = n_prof/n_tested)
+
+md_ela <- md_test %>% 
+  filter(subject == "ela",
+         str_detect(school,"City Neighbors")==TRUE|
+         school =="Baltimore Montessori Public Charter School")
+md_ela_stan <- md_test %>% 
+  filter(subject == "ela",
+         school != "All Baltimore City Schools") %>% 
+  summarize(mean_ela = mean(p_prof),
+            sd_ela = sd(p_prof))
+md_ela_stan$link = "A"
+md_ela$link = "A"
+md_ela <- merge(md_ela, md_ela_stan, by="link")
+md_ela <- md_ela %>% 
+  mutate(comp_ela = (p_prof - mean_ela)/sd_ela) %>% 
+  select(school, subject, n_tested, p_prof, mean_ela, comp_ela)
+
+md_math <- md_test %>% 
+  filter(subject == "math",
+         str_detect(school,"City Neighbors")==TRUE|
+           school =="Baltimore Montessori Public Charter School")
+md_math_stan <- md_test %>% 
+  filter(subject == "math",
+         school != "All Baltimore City Schools") %>% 
+  summarize(mean_math = mean(p_prof),
+            sd_math = sd(p_prof))
+md_math_stan$link = "A"
+md_math$link = "A"
+md_math <- merge(md_math, md_math_stan, by="link")
+md_math <- md_math %>% 
+  mutate(comp_math = (p_prof - mean_math)/sd_math) %>% 
+  select(school, subject, n_tested, p_prof, mean_math, comp_math)
+
+write.csv(md_ela, file = file.path("output_data/md_stan_ela.csv"), row.names = FALSE)
+write.csv(md_math, file = file.path("output_data/md_stan_math.csv"), row.names = FALSE)

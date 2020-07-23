@@ -224,6 +224,7 @@ la_stan_acad <- la_stan_acad %>%
 write.csv(la_stan_acad, file = file.path("output_data/la_stan_acad.csv"),row.names = FALSE)
 
 la_hs <- read_excel("raw_data/LA_2019-school-leap-2025-achievement-level-summary.xlsx", sheet = "High School")
+# data imported from https://www.louisianabelieves.com/docs/default-source/test-results/2019-school-leap-2025-achievement-level-summary.xlsx?sfvrsn=5da19c1f_8
 View(la_hs)
 la_hs <- la_hs[-c(1,2,3,4),]
 colnames(la_hs) = la_hs[1, ]
