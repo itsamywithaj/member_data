@@ -258,16 +258,16 @@ md_test<-md_test %>%
   select(LSS.Name,School.Name,Assessment,Tested.Count,Proficient.Count,Proficient.Pct) %>% 
   filter(LSS.Name == "Baltimore City")
 names(md_test) <- c("district","school","test","n_tested","n_prof","p_prof")
+md_test$test <- as.factor(md_test$test)
 levels(md_test$test) <- gsub("English/Language Arts","ela",levels(md_test$test))
 levels(md_test$test) <- gsub("Mathematics","math",levels(md_test$test))
-levels(md_test$test)[c(1:2,11)] <- "math"
+levels(md_test$test)[1] <- "math"
 levels(md_test$test) <- gsub("Grade", "--",levels(md_test$test))
 
 md_test <- md_test %>% 
   separate(test,c("subject","grade"),sep=" -- ",extra = "merge") %>% 
   mutate(n_tested = as.numeric(as.character(n_tested)),
-         n_prof = as.numeric(as.character(n_prof))) %>% 
-  na.omit() %>% 
+         n_prof = as.numeric(gsub("[^0-9.-]", 0, as.character(n_prof)))) %>% 
   select(district, school, subject, n_tested, n_prof)
 DT <- data.table(md_test)
 md_test <- DT[, lapply(.SD, sum), by=list(school, district, subject)]
@@ -293,10 +293,12 @@ md_ela <- md_ela %>%
 md_math <- md_test %>% 
   filter(subject == "math",
          str_detect(school,"City Neighbors")==TRUE|
-           school =="Baltimore Montessori Public Charter School")
+           school =="Baltimore Montessori Public Charter School") %>% 
+  mutate_if(is.numeric, replace_na, replace = 0)
 md_math_stan <- md_test %>% 
   filter(subject == "math",
          school != "All Baltimore City Schools") %>% 
+  mutate_if(is.numeric, replace_na, replace = 0) %>% 
   summarize(mean_math = mean(p_prof),
             sd_math = sd(p_prof))
 md_math_stan$link = "A"

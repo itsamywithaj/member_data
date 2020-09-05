@@ -181,8 +181,9 @@ leap_scores <- leap_scores %>%
 str(leap_scores)
 leap_scores$grade <- as.factor(leap_scores$grade)
 levels(leap_scores$grade) <- c("gr3","gr4","gr5","gr6","gr7","gr8")
+summary(leap_scores$grade)
 leap_scores <- leap_scores %>% 
-  distinct(sitecd, sitename, school, district, n_tested, .keep_all = TRUE) %>% 
+  distinct(sitecd, sitename, district, school, grade, district, n_tested, .keep_all = TRUE) %>% 
   spread(key = grade, # change grades column to separate columns
          value = n_tested, # number tested for each grade
          fill = 0) %>% 

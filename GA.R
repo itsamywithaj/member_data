@@ -4,7 +4,8 @@ install.packages("tidyverse") # install tidyverse
 library(tidyverse)
 install.packages("ggplot2")
 library(ggplot2)
-
+install.packages("data.frame")
+library(data.table)
 #--- Enrollment by race and ethnicity -----
 # data imported from https://oraapp.doe.k12.ga.us/ows-bin/owa/fte_pack_ethnicsex_pub.entry_form
 ga_enroll <- read.csv("raw_data/GA_FTE Enrollment by Race_Ethnicity and Gender Fiscal Year2020-3 Data Report.csv", header = FALSE)
@@ -136,11 +137,13 @@ ga_memb_sub <- ga_memb_sub %>%
 write.csv(ga_memb_sub, file = file.path("output_data/ga_stan_swdlep.csv"), row.names = FALSE)
 
 #----- math and ela performance ----
+# data from https://download.gosa.ga.gov/2019/EOG_2019_By_Grad_FEB_24_2020.csv
 ga_acadk8 <- read.csv("raw_data/GA_EOG_2019_By_Grad_FEB_24_2020.csv")
 summary(ga_acadk8)
 names(ga_acadk8) <- tolower(names(ga_acadk8))
 names(ga_acadk8)[c(3,5,6,7,8,9,12,13,16,17)] <- c("district","school","grade","subgroup","subject","n_tested",
                                                   "c_prof","c_ding","p_prof","p_ding")
+ga_acadk8$subject <- as.factor(ga_acadk8$subject)
 levels(ga_acadk8$subject)[1:2] <- c("ela","math")
 ga_acadk8 <- ga_acadk8 %>% 
   filter(subject == "ela"|
@@ -152,6 +155,7 @@ ga_acadk8 <- ga_acadk8 %>%
 DT <- data.table(ga_acadk8)
 ga_allgrades <- DT[, lapply(.SD, sum), by=list(school, district, subject, subgroup)]
 ga_allgrades <- ga_allgrades %>% 
+  filter(school!= "ALL") %>% 
   mutate(p_prof = c_prof/n_tested,
          p_ding = c_ding/n_tested,
          perc_pd = (c_prof + c_ding)/n_tested) %>% # percent of students deemed "proficient" + "distinguished"

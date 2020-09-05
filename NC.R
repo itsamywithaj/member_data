@@ -177,7 +177,7 @@ levels(elswd$agency_code) <- c("32K000","60M000")
 nc_stan_elswd <- merge(memb_elswd,elswd,by=c("agency_code","subgroup"))
 nc_stan_elswd <- nc_stan_elswd %>% 
   mutate(comp_pct = (pct_enrolled - m_pct)/sd_pct) %>% 
-  select(agency_code, subgroup, pct_enrolled, m_pct, comp_pct)
+  select(agency_code, subgroup, pct_enrolled, m_pct, comp_pct,sd_pct)
 write.csv(nc_stan_elswd, file = file.path("output_data/nc_stan_elswd.csv"),row.names = FALSE)
 
 #---- academic performance ----
