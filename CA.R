@@ -115,6 +115,7 @@ memb_enrl <- enrl %>%
            school == "Gateway Middle"|
            str_detect(school, "High Tech") == TRUE|
            school == "Larchmont Charter"|
+           school == "Multicultural Learning Center"|
            school == "Odyssey Charter"|
            str_detect(school, "Summit Public") == TRUE|
            school == "Tomorrow's Leadership Collaborative (TLC) Charter"|
@@ -220,6 +221,7 @@ memb_locseg <- la_locseg %>%
            school == "Gateway Middle"|
            str_detect(school, "High Tech") == TRUE|
            school == "Larchmont Charter"|
+           school == "Multicultural Learning Center"|
            school == "Odyssey Charter"|
            str_detect(school, "Summit Public") == TRUE|
            school == "Tomorrow's Leadership Collaborative (TLC) Charter"|
@@ -251,6 +253,7 @@ launified <- launified %>%
            school == "Gateway Middle"|
            str_detect(school, "High Tech") == TRUE|
            school == "Larchmont Charter"|
+           school == "Multicultural Learning Center"|
            school == "Odyssey Charter"|
            str_detect(school, "Summit Public") == TRUE|
            school == "Tomorrow's Leadership Collaborative (TLC) Charter"|
@@ -732,6 +735,7 @@ memb_ell <- school_ell %>%
            school == "Gateway High"|
            school == "Gateway Middle"|
            str_detect(school, "High Tech") == TRUE|
+           school == "Multicultural Learning Center"|
            school == "Larchmont Charter"|
            school == "Odyssey Charter"|
            str_detect(school, "Summit Public") == TRUE|
@@ -788,6 +792,7 @@ memb_frpm <- school_frpm %>%
            school == "Gateway Middle"|
            str_detect(school, "High Tech") == TRUE|
            school == "Larchmont Charter"|
+           school == "Multicultural Learning Center"|
            school == "Odyssey Charter"|
            str_detect(school, "Summit Public") == TRUE|
            school == "Tomorrow's Leadership Collaborative (TLC) Charter"|
@@ -915,6 +920,7 @@ caaspp_memb <- caaspp_ent %>%
            school_name == "Gateway Middle"|
            str_detect(school_name, "High Tech") == TRUE|
            school_name == "Larchmont Charter"|
+           school_name == "Multicultural Learning Center"|
            school_name == "Odyssey Charter"|
            str_detect(school_name, "Summit Public") == TRUE|
            school_name == "Tomorrow's Leadership Collaborative (TLC) Charter"|
