@@ -1,0 +1,9 @@
+"school","district","n_tested","p_math","dist_math","p_ela","dist_ela"
+"Atlanta Neighborhood Charter - Elementary","Atlanta Public Schools",193,NA,0.261507110264475,0.632,0.309230905389858
+"Atlanta Neighborhood Charter - Elementary","Atlanta Public Schools",194,0.634,0.261507110264475,NA,0.309230905389858
+"Atlanta Neighborhood Charter - Middle","Atlanta Public Schools",223,0.48,0.261507110264475,NA,0.309230905389858
+"Atlanta Neighborhood Charter - Middle","Atlanta Public Schools",224,NA,0.261507110264475,0.612,0.309230905389858
+"Museum School Avondale Estates","DeKalb County",393,0.432,0.242270068328172,NA,0.302598264546103
+"Museum School Avondale Estates","DeKalb County",394,NA,0.242270068328172,0.569,0.302598264546103
+"Susie King Taylor Community School","Savannah-Chatham County",104,0.201,0.218425334835399,0.269,0.237554146525206
+"Susie King Taylor Community School Middle Grades Academy for Social Justice","Savannah-Chatham County",81,0,0.218425334835399,0.148,0.237554146525206

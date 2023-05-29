@@ -1,0 +1,7 @@
+"subject","system_name","school_name","n_tested","n_met_exceed","p_met_exceed","dist_met_exceed"
+"ELA","Davidson County","Nashville Classical",327,156,0.477064220183486,0.262955446792142
+"ELA","Davidson County","Valor Flagship Academy",929,560,0.602798708288482,0.262955446792142
+"ELA","Davidson County","Valor Voyager Academy",480,262,0.545833333333333,0.262955446792142
+"Math","Davidson County","Nashville Classical",327,168,0.513761467889908,0.202270278397274
+"Math","Davidson County","Valor Flagship Academy",1040,545,0.524038461538462,0.202270278397274
+"Math","Davidson County","Valor Voyager Academy",477,304,0.637316561844864,0.202270278397274

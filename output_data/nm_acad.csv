@@ -1,0 +1,4 @@
+"code","state or district","school","sortcode","group","n_ela","p_ela","n_math","p_math","district"
+"1000","ALBUQUERQUE","Districtwide","1","All","211",0.71,"226",0.34,"ALBUQUERQUE"
+"71000","SANTA FE","Districtwide","1","All","187",0.73,"188",0.27,"SANTA FE"
+"575001","ALTURA PREPARATORY SCHOOL","ALTURA PREPARATORY SCHOOL","1","All","*",80,"30",0.43,"ALTURA PREPARATORY SCHOOL"
